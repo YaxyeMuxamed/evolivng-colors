@@ -4,9 +4,6 @@ class Automata {
         this.width = 100;
         this.plants = Array.from({length: this.width}, () => new Array(this.length).fill(null));
     }
-     updatePlants() {
-        this.plants.forEach(plant => plant.update(this.plantGrowthRate));
-    }
     
     clearPlants() {
         for (let i = 0; i < this.width; i++) {
