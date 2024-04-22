@@ -10,42 +10,43 @@ class Animat {
     }
 
 
-	move() {
+    move() {
         let bestX = this.x;
         let bestY = this.y;
-        let minDifference = Infinity;
-        let i = -1;
-
-        while (i <= 1) {
-            let j = -1;
-            while (j <= 1) {
+        let minDifference = Infinity;  // Initialize to highest possible to find minimum.
+        let moveThreshold = 20;  // Minimum hue difference to consider a move significant.
+        let probabilityToMove = 0.5; // Probability that the animat will decide to move even if it finds a better option.
+    
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
                 const newX = (this.x + i + this.dimension) % this.dimension;
                 const newY = (this.y + j + this.dimension) % this.dimension;
                 const plant = this.automata.plants[newX][newY];
-
-                if (!plant) {
-                    if (Infinity < minDifference) {
-                        minDifference = Infinity;
-                        bestX = newX;
-                        bestY = newY;
+    
+                if (plant) {
+                    const hueDiff = Math.abs(this.hue - plant.hue);
+                    if (hueDiff < minDifference && hueDiff > moveThreshold) {
+                        if (Math.random() < probabilityToMove) {
+                            minDifference = hueDiff;
+                            bestX = newX;
+                            bestY = newY;
+                        }
                     }
                 } else {
-                    const hueDiff = Math.abs(this.hue - plant.hue);
-                    if (hueDiff < minDifference) {
-                        minDifference = hueDiff;
+                    // Handle moving to an empty space only if no better colored plant options are available.
+                    if (minDifference === Infinity && Math.random() < probabilityToMove) {
                         bestX = newX;
                         bestY = newY;
                     }
                 }
-                j++;
             }
-            i++;
         }
-
+    
         this.x = bestX;
         this.y = bestY;
     }
-
+    
+    
 
 	mutate() {
         const getRandomOffset = (range) => Math.floor(Math.random() * range) - Math.floor(range / 2);
